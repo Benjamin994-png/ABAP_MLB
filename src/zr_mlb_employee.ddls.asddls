@@ -13,9 +13,13 @@ association [1..1] to ZI_MLB_EMPLOYEETEXT    as _EmployeeText on $projection.Emp
     entry_date as EntryDate,
     
     /* Administrative Data */
+    @Semantics.user.createdBy: true
     created_by as CreatedBy,
+    @Semantics.systemDateTime.createdAt: true
     created_at as CreatedAt,
+    @Semantics.user.lastChangedBy: true
     last_changed_by as LastChangedBy,
+    @Semantics.systemDateTime.lastChangedAt: true
     last_changed_at as LastChangedAt,
     
     /*Transient Data */

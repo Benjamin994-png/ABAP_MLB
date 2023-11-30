@@ -4,13 +4,24 @@ CLASS lhc_Employee DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS get_instance_authorizations FOR INSTANCE AUTHORIZATION
       IMPORTING keys REQUEST requested_authorizations FOR Employee RESULT result.
 
+    METHODS get_instance_authorizations_1 FOR INSTANCE AUTHORIZATION
+      IMPORTING keys REQUEST requested_authorizations FOR Request RESULT result.
+
     METHODS approverequest FOR MODIFY
       IMPORTING keys FOR ACTION request~ApproveRequest RESULT result.
 
     METHODS declinerequest FOR MODIFY
       IMPORTING keys FOR ACTION request~DeclineRequest RESULT result.
-    METHODS get_instance_authorizations_1 FOR INSTANCE AUTHORIZATION
-      IMPORTING keys REQUEST requested_authorizations FOR Request RESULT result.
+
+    METHODS determinestatus FOR DETERMINE ON MODIFY
+      IMPORTING keys FOR request~DetermineStatus.
+
+    METHODS determinestatusreqcomment FOR DETERMINE ON MODIFY
+      IMPORTING keys FOR request~DetermineStatusReqComment.
+
+    METHODS validatedates FOR VALIDATE ON SAVE
+      IMPORTING keys FOR request~ValidateDates.
+
 
 ENDCLASS.
 
@@ -103,10 +114,65 @@ CLASS lhc_Employee IMPLEMENTATION.
     %param = r ) ).
   ENDMETHOD.
 
-  METHOD get_instance_authorizations.
-  ENDMETHOD.
+  METHOD determinestatus.
+    "Read Requests
+    READ ENTITY IN LOCAL MODE zr_mlb_vac_req
+    FIELDS ( Status )
+    WITH CORRESPONDING #( keys )
+    RESULT DATA(requests).
 
-  METHOD get_instance_authorizations_1.
-  ENDMETHOD.
+    "Modify Requests
+    MODIFY ENTITY IN LOCAL MODE zr_mlb_vac_req
+        UPDATE FIELDS ( Status )
+        with value #( FOR r in requests
+                        ( %tky = r-%tky
+                        Status = 'B' ) ).
+
+    ENDMETHOD.
+
+    METHOD determinestatusreqcomment.
+    "Read Requests
+    READ ENTITY IN LOCAL MODE zr_mlb_vac_req
+    FIELDS ( Status )
+    WITH CORRESPONDING #( keys )
+    RESULT DATA(requests).
+
+    "Modify Requests
+    MODIFY ENTITY IN LOCAL MODE zr_mlb_vac_req
+        UPDATE FIELDS ( Status )
+        with value #( FOR r in requests
+                        ( %tky = r-%tky
+                        Status = 'B' ) ).
+
+    ENDMETHOD.
+
+  METHOD validatedates.
+    DATA message TYPE REF TO zcm_mlb_employee.
+
+    "Read Requests
+    READ ENTITY IN LOCAL mode zr_mlb_vac_req
+    FIELDS ( STARTDATE EndDate )
+    WITH CORRESPONDING #( keys )
+    RESULT DATA(requests).
+
+    "Process Requests
+    LOOP AT requests INTO DATA(request).
+    "Validate Dates and Create Error Message
+    IF request-EndDate < request-StartDate.
+        message = NEW zcm_mlb_employee( textid = zcm_mlb_employee=>invalid_dates ).
+        APPEND VALUE #( %tky = request-%tky
+                        %msg = message ) TO reported-request.
+        APPEND VALUE #( %tky = request-%tky ) TO failed-request.
+    ENDIF.
+  ENDLOOP.
+ENDMETHOD.
+
+
+
+    METHOD get_instance_authorizations.
+    ENDMETHOD.
+
+    METHOD get_instance_authorizations_1.
+    ENDMETHOD.
 
 ENDCLASS.

@@ -32,6 +32,12 @@
      <MSGNR>004</MSGNR>
      <TEXT>The request &amp;1 is already declined.</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMLB_EMLOYEE</ARBGB>
+     <MSGNR>005</MSGNR>
+     <TEXT>Begin Date must be before End Date</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

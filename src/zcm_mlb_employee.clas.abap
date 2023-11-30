@@ -12,7 +12,7 @@ CLASS zcm_mlb_employee DEFINITION
 
     CONSTANTS:
       BEGIN OF request_successfully_approved,
-        msgid TYPE symsgid VALUE 'ZMLB_EMPLOYEE',
+        msgid TYPE symsgid VALUE 'ZMLB_EMLOYEE',
         msgno TYPE symsgno VALUE '001',
         attr1 TYPE scx_attrname VALUE 'REQ_COMMENT',
         attr2 TYPE scx_attrname VALUE '',
@@ -22,7 +22,7 @@ CLASS zcm_mlb_employee DEFINITION
 
     CONSTANTS:
       BEGIN OF request_successfully_declined,
-        msgid TYPE symsgid VALUE 'ZMLB_EMPLOYEE',
+        msgid TYPE symsgid VALUE 'ZMLB_EMLOYEE',
         msgno TYPE symsgno VALUE '002',
         attr1 TYPE scx_attrname VALUE 'REQ_COMMENT',
         attr2 TYPE scx_attrname VALUE '',
@@ -32,7 +32,7 @@ CLASS zcm_mlb_employee DEFINITION
 
     CONSTANTS:
       BEGIN OF request_already_approved,
-        msgid TYPE symsgid VALUE 'ZMLB_EMPLOYEE',
+        msgid TYPE symsgid VALUE 'ZMLB_EMLOYEE',
         msgno TYPE symsgno VALUE '003',
         attr1 TYPE scx_attrname VALUE 'REQ_COMMENT',
         attr2 TYPE scx_attrname VALUE '',
@@ -42,7 +42,7 @@ CLASS zcm_mlb_employee DEFINITION
 
     CONSTANTS:
       BEGIN OF request_already_declined,
-        msgid TYPE symsgid VALUE 'ZMLB_EMPLOYEE',
+        msgid TYPE symsgid VALUE 'ZMLB_EMLOYEE',
         msgno TYPE symsgno VALUE '004',
         attr1 TYPE scx_attrname VALUE 'REQ_COMMENT',
         attr2 TYPE scx_attrname VALUE '',
@@ -50,8 +50,19 @@ CLASS zcm_mlb_employee DEFINITION
         attr4 TYPE scx_attrname VALUE '',
       END OF request_already_declined.
 
+      CONSTANTS:
+      BEGIN OF invalid_dates,
+        msgid TYPE symsgid VALUE 'ZMLB_EMLOYEE',
+        msgno TYPE symsgno VALUE '005',
+        attr1 TYPE scx_attrname VALUE '',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF invalid_dates.
+
     "Attributes
     DATA req_comment TYPE zmlb_req_comment.
+
 
     METHODS constructor
       IMPORTING

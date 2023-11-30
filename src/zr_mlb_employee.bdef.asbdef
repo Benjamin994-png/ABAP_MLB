@@ -55,6 +55,14 @@ authorization dependent by _Employee
   action ApproveRequest result [1] $self;
   action DeclineRequest result [1] $self;
 
+  determination DetermineStatus on modify { create; }
+  determination DetermineStatusReqComment on modify { field ReqComment; }
+
+  determine action ValidateRequest{
+    validation ValidateDates;
+  }
+  validation ValidateDates on save  { create; }
+
   field ( readonly, numbering : managed ) RequestUuid;
   field ( mandatory : create ) Approver, StartDate, EndDate;
   field ( readonly : update ) Approver, StartDate, EndDate;
