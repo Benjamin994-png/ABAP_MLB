@@ -1,0 +1,112 @@
+CLASS lhc_Employee DEFINITION INHERITING FROM cl_abap_behavior_handler.
+  PRIVATE SECTION.
+
+    METHODS get_instance_authorizations FOR INSTANCE AUTHORIZATION
+      IMPORTING keys REQUEST requested_authorizations FOR Employee RESULT result.
+
+    METHODS approverequest FOR MODIFY
+      IMPORTING keys FOR ACTION request~ApproveRequest RESULT result.
+
+    METHODS declinerequest FOR MODIFY
+      IMPORTING keys FOR ACTION request~DeclineRequest RESULT result.
+    METHODS get_instance_authorizations_1 FOR INSTANCE AUTHORIZATION
+      IMPORTING keys REQUEST requested_authorizations FOR Request RESULT result.
+
+ENDCLASS.
+
+CLASS lhc_Employee IMPLEMENTATION.
+
+
+  METHOD approverequest.
+    DATA message TYPE REF TO zcm_mlb_employee.
+    " Read Travels
+    READ ENTITY IN LOCAL MODE zr_mlb_vac_req
+    ALL FIELDS
+    WITH CORRESPONDING #( keys )
+    RESULT DATA(requests).
+
+    " Process Travels
+    LOOP AT requests REFERENCE INTO DATA(request).
+      " Validate Status and Create Error Message
+      IF request->Status = 'G'.
+        message = NEW zcm_mlb_employee(
+        textid = zcm_mlb_employee=>request_already_approved
+        req_comment = request->ReqComment ) .
+
+        APPEND VALUE #( %tky = request->%tky
+                        %element = VALUE #( Status = if_abap_behv=>mk-on )
+                        %msg = message ) TO reported-request.
+        APPEND VALUE #( %tky = request->%tky ) TO failed-request.
+        DELETE requests INDEX sy-tabix.
+        CONTINUE.
+      ENDIF.
+
+      " Set Status to Approved and Create Success Message
+      request->Status = 'G'.
+      message = NEW zcm_mlb_employee( severity = if_abap_behv_message=>severity-success
+                                      textid = zcm_23det_request=>request_successfully_approved
+                                      req_comment = request->ReqComment ).
+      APPEND VALUE #( %tky = request->%tky
+      %element = VALUE #( Status = if_abap_behv=>mk-on )
+      %msg = message ) TO reported-request.
+    ENDLOOP.
+    " Modify Requests
+    MODIFY ENTITY IN LOCAL MODE zr_mlb_vac_req
+    UPDATE FIELDS ( Status )
+    WITH VALUE #( FOR r IN requests
+    ( %tky = r-%tky Status = r-Status ) ).
+    " Set Result
+    result = VALUE #( FOR r IN requests
+    ( %tky = r-%tky
+    %param = r ) ).
+  ENDMETHOD.
+
+
+  METHOD declinerequest.
+    DATA message TYPE REF TO zcm_mlb_employee.
+    " Read Travels
+    READ ENTITY IN LOCAL MODE zr_mlb_vac_req
+    ALL FIELDS
+    WITH CORRESPONDING #( keys )
+    RESULT DATA(requests).
+    " Process Travels
+    LOOP AT requests REFERENCE INTO DATA(request).
+      " Validate Status and Create Error Message
+      IF request->Status = 'A'.
+        message = NEW zcm_mlb_employee( textid = zcm_mlb_employee=>request_already_declined
+                                        req_comment = request->ReqComment ).
+        APPEND VALUE #( %tky = request->%tky
+        %element = VALUE #( Status = if_abap_behv=>mk-on )
+        %msg = message ) TO reported-request.
+        APPEND VALUE #( %tky = request->%tky ) TO failed-request.
+        DELETE requests INDEX sy-tabix.
+        CONTINUE.
+      ENDIF.
+
+      " Set Status to Approved and Create Success Message
+      request->Status = 'A'.
+      message = NEW zcm_mlb_employee( severity = if_abap_behv_message=>severity-success
+                                      textid = zcm_mlb_employee=>request_successfully_declined
+                                      req_comment = request->ReqComment ).
+      APPEND VALUE #( %tky = request->%tky
+      %element = VALUE #( Status = if_abap_behv=>mk-on )
+      %msg = message ) TO reported-request.
+    ENDLOOP.
+    " Modify Travels
+    MODIFY ENTITY IN LOCAL MODE zr_mlb_vac_req
+    UPDATE FIELDS ( Status )
+    WITH VALUE #( FOR r IN requests
+    ( %tky = r-%tky Status = r-Status ) ).
+    " Set Result
+    result = VALUE #( FOR r IN requests
+    ( %tky = r-%tky
+    %param = r ) ).
+  ENDMETHOD.
+
+  METHOD get_instance_authorizations.
+  ENDMETHOD.
+
+  METHOD get_instance_authorizations_1.
+  ENDMETHOD.
+
+ENDCLASS.

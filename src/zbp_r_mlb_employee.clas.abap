@@ -1,0 +1,5 @@
+CLASS zbp_r_mlb_employee DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zr_mlb_employee.
+ENDCLASS.
+
+CLASS zbp_r_mlb_employee IMPLEMENTATION.
+ENDCLASS.

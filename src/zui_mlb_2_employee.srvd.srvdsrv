@@ -1,0 +1,5 @@
+@EndUserText.label: '2 Employee'
+define service ZUI_MLB_2_Employee {
+  expose ZC_MLB_2_Employee as Employee;
+  expose ZC_MLB_2_VAC_REQ  as Request;
+}
